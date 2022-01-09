@@ -24,7 +24,7 @@ export class IngresoEgresoService {
   }
 
   initIngresosEgresosListener( uid: string ) {
-    this.fireStore.collection(`${ uid }/ingresos-egresos/items`)
+    return this.fireStore.collection(`${ uid }/ingresos-egresos/items`)
       .snapshotChanges()
       .pipe(
         map( sanpshot => sanpshot.map( doc => ({
@@ -32,9 +32,11 @@ export class IngresoEgresoService {
             ...doc.payload.doc.data() as any
         })))
       )
-      .subscribe( algo => {
-        console.log(algo);
-      });
+  }
+
+  borrarIngresoEgreso( uid: string ) {
+    const user = this.authService.user.uid;
+    return this.fireStore.doc(`${ user }/ingresos-egresos/items/${ uid }`).delete();
   }
 
 }

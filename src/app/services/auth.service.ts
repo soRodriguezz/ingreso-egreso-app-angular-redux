@@ -9,6 +9,7 @@ import { AppState } from '../app.reducer';
 import { Store } from '@ngrx/store';
 import { setUser, unSetUser } from '../auth/auth.actions';
 import { Subscription } from 'rxjs';
+import { unSetItems } from '../ingreso-egreso/ingreso-egreso.actions';
 
 @Injectable({
   providedIn: 'root'
@@ -31,15 +32,18 @@ export class AuthService {
   initAuthListener() {
     this.auth.authState.subscribe( fuser => {
       if ( fuser ) {
-        this.userSubscription = this.firestore.doc(`${ fuser.uid }/usuario`).valueChanges().subscribe( (firestoreUser: any) => {
-          const user = Usuario.fromFirestore( firestoreUser );
-          this._user = user;
-          this.store.dispatch( setUser({ user }) );
-        });
-      } else {
-        this._user = null;
-        this.userSubscription.unsubscribe();
-        this.store.dispatch( unSetUser() );
+        this.userSubscription = this.firestore.doc(`${ fuser.uid }/usuario`)
+          .valueChanges()
+          .subscribe( (firestoreUser: any) => {
+            const user = Usuario.fromFirestore( firestoreUser );
+            this._user = user;
+            this.store.dispatch( setUser({ user }) );
+          });
+        } else {
+          this._user = null;
+          //this.userSubscription.unsubscribe();
+          this.store.dispatch( unSetUser() );
+          this.store.dispatch( unSetItems() );
       }
     });
   }
