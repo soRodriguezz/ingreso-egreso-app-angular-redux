@@ -17,16 +17,15 @@ const routes: Routes = [
   },
   {
     path: '',
-    component: DashboardComponent,
-    children: DashboardRoutes,
-    canActivate: [AuthGuard]
+    canLoad: [AuthGuard],
+    loadChildren: () => import('./ingreso-egreso/ingreso-egreso.module')
+      .then(m => m.IngresoEgresoModule)
   },
   {
     path: '**',
     redirectTo: ''
   }
 ];
-
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
